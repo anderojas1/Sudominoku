@@ -58,6 +58,11 @@
     </attribute>
     <row>
      <property name="text">
+      <string>0</string>
+     </property>
+    </row>
+    <row>
+     <property name="text">
       <string>1</string>
      </property>
     </row>
@@ -96,11 +101,11 @@
       <string>8</string>
      </property>
     </row>
-    <row>
+    <column>
      <property name="text">
-      <string>9</string>
+      <string>0</string>
      </property>
-    </row>
+    </column>
     <column>
      <property name="text">
       <string>1</string>
@@ -139,11 +144,6 @@
     <column>
      <property name="text">
       <string>8</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>9</string>
      </property>
     </column>
    </widget>

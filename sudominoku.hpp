@@ -2,8 +2,8 @@
 #define SUDOMINOKU_HPP
 
 #include <QMainWindow>
-#include<QVector>
-#include "coordenada.hpp"
+#include <QVector>
+#include "ficha.hpp"
 
 
 namespace Ui {
@@ -17,6 +17,8 @@ class Sudominoku : public QMainWindow
 public:
     explicit Sudominoku(QWidget *parent = 0);
     ~Sudominoku();
+    void definirDomino();
+    bool verificarCasilla(int, int);
 
 private slots:
     void on_actionCargar_juego_triggered();
@@ -31,7 +33,7 @@ private:
     void definirRuta();
     QString ruta;
     void llenarJuego();
-    QVector<Coordenada*> *espaciosVacios;
+    QVector<Ficha*> *domino;
 
 };
 

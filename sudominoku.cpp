@@ -4,6 +4,7 @@
 #include <QThread>
 #include <QFileDialog>
 #include <iostream>
+#include <QApplication>
 
 
 using namespace std;
@@ -23,17 +24,17 @@ Sudominoku::Sudominoku(QWidget *parent) :
 
                 campo = new QTableWidgetItem();
                 campo->setTextAlignment(Qt::AlignCenter);
+                campo->setText("");
                 //campo->setBackgroundColor(QColor(240,240,240));
                 campo->setBackgroundColor(QColor(0,0,0));
 
-                //campo->setText("");
                 ui->tableroJuego->setItem(i, j, campo);
 
             }
         }
     }
 
-    espaciosVacios= new QVector<Coordenada*>();
+    definirDomino();
 
     /*definirRuta();
     cout << ruta.toStdString() << endl;*/
@@ -90,39 +91,35 @@ void Sudominoku::on_actionCargar_juego_triggered()
 
 void Sudominoku::cargarAmbiente() {
 
-    srand(time(NULL));
-    for (int i=0; i<9; i++){
-        for (int j=0; j<9;j++){
-            Coordenada *coor=new Coordenada(i,j);
-            espaciosVacios->push_back(coor);
-        }
-    }
-
-
-    for (int i = 1; i < 10; i++) {
-
-        int posicionVector = rand()%espaciosVacios->size()-1;
-
-        QTableWidgetItem *campo = ui->tableroJuego->item(espaciosVacios->at(posicionVector)->getx(), espaciosVacios->at(posicionVector)->gety());
-        campo->setText(QString::number(i));
-        campo->setFlags(Qt::ItemIsEditable);
-        campo->setTextColor(QColor(255,255,255));
-        campo->setBackgroundColor(QColor(127, 127, 127));
-        espaciosVacios->remove(posicionVector);
-
-    }
+    definirDomino();
 
     for (int i = 0; i < 9; i++) {
 
-        QString fila = "";
         for (int j = 0; j < 9; j++) {
 
-            QString valor = ui->tableroJuego->item(i, j)->text();
-            fila += valor + " ";
+            ui->tableroJuego->item(i, j)->setText("");
+            ui->tableroJuego->item(i, j)->setBackgroundColor(QColor(0,0,0));
 
         }
+    }
 
-        cout << fila.toStdString() << endl;
+    srand(time(NULL));
+
+    int contadorNumeros = 1;
+
+    while (contadorNumeros < 10) {
+
+        int i = rand()%8;
+        int j = rand()%8;
+
+        QTableWidgetItem *casilla = ui->tableroJuego->item(i, j);
+
+        if (casilla->text().size() == 0) {
+
+            casilla->setText(QString::number(contadorNumeros++));
+            casilla->setBackgroundColor(QColor(127,127,127));
+
+        }
 
     }
 
@@ -132,87 +129,60 @@ void Sudominoku::llenarJuego() {
 
     srand(time(NULL));
 
-    int arrayJuego [3][9] = {{0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0}}
-                            {{0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0},
-                            {0,0,0,0,0,0,0,0,0},
-                           {0,0,0,0,0,0,0,0,0},
-                           {0,0,0,0,0,0,0,0,0},
-                           {0,0,0,0,0,0,0,0,0},
-                           {0,0,0,0,0,0,0,0,0},
-                           {0,0,0,0,0,0,0,0,0},
-                           {0,0,0,0,0,0,0,0,0},
-                           {0,0,0,0,0,0,0,0,0},
-                           {0,0,0,0,0,0,0,0,0},
-                           {0,0,0,0,0,0,0,0,0},
-                           {0,0,0,0,0,0,0,0,0},
-                           {0,0,0,0,0,0,0,0,0},
+    while (domino->size() > 0) {
 
-                           };
+        bool colocar = false;
 
-    QVector<int> *fila1 = new QVector<int>();
-    QVector<int> *fila2 = new QVector<int>();
-    QVector<int> *fila3 = new QVector<int>();
-    QVector<int> *fila4 = new QVector<int>();
-    QVector<int> *fila5 = new QVector<int>();
-    QVector<int> *fila6 = new QVector<int>();
-    QVector<int> *fila7 = new QVector<int>();
-    QVector<int> *fila8 = new QVector<int>();
-    QVector<int> *fila9 = new QVector<int>();
+        cout << "Ficha: " << domino->at(0)->getNumero1() << " " << domino->at(0)->getNumero2() << endl;
 
-    QVector<int> *columna1 = new QVector<int>();
-    QVector<int> *columna2 = new QVector<int>();
-    QVector<int> *columna3 = new QVector<int>();
-    QVector<int> *columna4 = new QVector<int>();
-    QVector<int> *columna5 = new QVector<int>();
-    QVector<int> *columna6 = new QVector<int>();
-    QVector<int> *columna7 = new QVector<int>();
-    QVector<int> *columna8 = new QVector<int>();
-    QVector<int> *columna9 = new QVector<int>();
+        while (colocar == false) {
 
-    QVector<int> *cuadricula1 = new QVector<int>();
-    QVector<int> *cuadricula2 = new QVector<int>();
-    QVector<int> *cuadricula3 = new QVector<int>();
-    QVector<int> *cuadricula4 = new QVector<int>();
-    QVector<int> *cuadricula5 = new QVector<int>();
-    QVector<int> *cuadricula6 = new QVector<int>();
-    QVector<int> *cuadricula7 = new QVector<int>();
-    QVector<int> *cuadricula8 = new QVector<int>();
-    QVector<int> *cuadricula9 = new QVector<int>();
+            int i = rand()%8;
+            int j = rand()%8;
+            int rotacion = rand()%3;
+            int x, y;
+
+            if (rotacion == 0) {
+
+                x = i;
+                y = j+1;
+
+            }
+
+            else if (rotacion == 1) {
+
+                x = i+1;
+                y = j;
+
+            }
+
+            else if (rotacion == 2) {
+
+                x = i;
+                y = j-1;
+
+            }
+
+            else {
+
+                x = i-1;
+                y = j;
+
+            }
 
 
-    for (int i=1; i<10;i++){
-        int contador=0;
-        while (contador<8 && !espaciosVacios->empty()){
+            if (verificarCasilla(i, j) && verificarCasilla(x, y)) {
 
-            int posicion = 0;
+                ui->tableroJuego->item(i,j)->setText(QString::number(domino->at(0)->getNumero1()));
+                ui->tableroJuego->item(i,j)->setBackgroundColor(QColor(255,0,0));
+                ui->tableroJuego->item(x,y)->setText(QString::number(domino->at(0)->getNumero2()));
+                ui->tableroJuego->item(x,y)->setBackgroundColor(QColor(255,0,0));
+                colocar = true;
+                cout << "Ficha puesta\n";
+                domino->pop_front();
+                qApp->processEvents();
 
-            if (espaciosVacios->size() > 1)
-                posicion = rand()%(espaciosVacios->size()-1);
-
-            int col, row;
-
-            row = espaciosVacios->at(posicion)->getx();
-            col = espaciosVacios->at(posicion)->gety();
-
-            if (i )
-
-            ui->tableroJuego->item(espaciosVacios->at(posicion)->getx(),
-                                                    espaciosVacios->at(posicion)->gety())->setText(QString::number(i));
-            espaciosVacios->remove(posicion);
-
-            contador++;
+            }
 
         }
 
@@ -223,4 +193,36 @@ void Sudominoku::llenarJuego() {
 void Sudominoku::on_actionJugar_triggered()
 {
     llenarJuego();
+}
+
+void Sudominoku::definirDomino() {
+
+    domino = new QVector<Ficha*>();
+
+    for (int i = 1; i < 10; i++) {
+
+        for (int j = i +1; j < 10; j++) {
+
+            Ficha *nuevaFicha = new Ficha(i, j);
+            domino->append(nuevaFicha);
+
+        }
+
+    }
+
+}
+
+bool Sudominoku::verificarCasilla(int i, int j) {
+
+    bool casillaLibre = false;
+
+    if (i > 0 && i < 9 && j > 0 && j < 9) {
+
+        if (ui->tableroJuego->item(i, j)->text().size() == 0)
+            casillaLibre = true;
+
+    }
+
+    return casillaLibre;
+
 }
