@@ -14,9 +14,9 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         sudominoku.cpp \
-    coordenada.cpp
+    ficha.cpp
 
 HEADERS  += sudominoku.hpp \
-    coordenada.hpp
+    ficha.hpp
 
 FORMS    += sudominoku.ui

@@ -161,10 +161,19 @@
     <property name="title">
      <string>Opciones</string>
     </property>
-    <addaction name="actionCargar_juego"/>
+    <widget class="QMenu" name="menuCargar_juego">
+     <property name="title">
+      <string>Cargar juego</string>
+     </property>
+     <addaction name="separator"/>
+     <addaction name="actionCargar_ambiente"/>
+     <addaction name="actionAleatorio"/>
+    </widget>
+    <addaction name="menuCargar_juego"/>
+    <addaction name="separator"/>
+    <addaction name="actionJugar"/>
     <addaction name="separator"/>
     <addaction name="actionSalir"/>
-    <addaction name="actionJugar"/>
    </widget>
    <addaction name="menuOpciones"/>
   </widget>
@@ -177,11 +186,6 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionCargar_juego">
-   <property name="text">
-    <string>Cargar juego</string>
-   </property>
-  </action>
   <action name="actionSalir">
    <property name="text">
     <string>Salir</string>
@@ -190,6 +194,16 @@
   <action name="actionJugar">
    <property name="text">
     <string>Jugar</string>
+   </property>
+  </action>
+  <action name="actionCargar_ambiente">
+   <property name="text">
+    <string>Cargar ambiente</string>
+   </property>
+  </action>
+  <action name="actionAleatorio">
+   <property name="text">
+    <string>Aleatorio</string>
    </property>
   </action>
  </widget>

@@ -5,6 +5,9 @@
 #include <QFileDialog>
 #include <iostream>
 #include <QApplication>
+#include <QFile>
+#include <QFileDialog>
+#include <cstdlib>
 
 
 using namespace std;
@@ -27,6 +30,7 @@ Sudominoku::Sudominoku(QWidget *parent) :
                 campo->setText("");
                 //campo->setBackgroundColor(QColor(240,240,240));
                 campo->setBackgroundColor(QColor(0,0,0));
+                campo->setTextColor(QColor(255,255,255));
 
                 ui->tableroJuego->setItem(i, j, campo);
 
@@ -34,6 +38,7 @@ Sudominoku::Sudominoku(QWidget *parent) :
         }
     }
 
+    definirContenedores();
     definirDomino();
 
     /*definirRuta();
@@ -45,11 +50,6 @@ Sudominoku::~Sudominoku()
     delete ui;
 }
 
-void Sudominoku::on_actionCargar_juego_triggered()
-{
-
-    cargarAmbiente();
-}
 
 /*void Sudominoku::definirRuta() {
 
@@ -92,16 +92,8 @@ void Sudominoku::on_actionCargar_juego_triggered()
 void Sudominoku::cargarAmbiente() {
 
     definirDomino();
-
-    for (int i = 0; i < 9; i++) {
-
-        for (int j = 0; j < 9; j++) {
-
-            ui->tableroJuego->item(i, j)->setText("");
-            ui->tableroJuego->item(i, j)->setBackgroundColor(QColor(0,0,0));
-
-        }
-    }
+    definirContenedores();
+    reiniciarGUI();
 
     srand(time(NULL));
 
@@ -117,7 +109,7 @@ void Sudominoku::cargarAmbiente() {
         if (casilla->text().size() == 0) {
 
             casilla->setText(QString::number(contadorNumeros++));
-            casilla->setBackgroundColor(QColor(127,127,127));
+            casilla->setBackgroundColor(QColor(255,0,0));
 
         }
 
@@ -137,8 +129,8 @@ void Sudominoku::llenarJuego() {
 
         while (colocar == false) {
 
-            int i = rand()%8;
-            int j = rand()%8;
+            int i = rand()%9;
+            int j = rand()%9;
             int rotacion = rand()%3;
             int x, y;
 
@@ -173,10 +165,13 @@ void Sudominoku::llenarJuego() {
 
             if (verificarCasilla(i, j) && verificarCasilla(x, y)) {
 
+                int G = rand()%255;
+                int B = rand()%255;
+
                 ui->tableroJuego->item(i,j)->setText(QString::number(domino->at(0)->getNumero1()));
-                ui->tableroJuego->item(i,j)->setBackgroundColor(QColor(255,0,0));
+                ui->tableroJuego->item(i,j)->setBackgroundColor(QColor(0,G,B));
                 ui->tableroJuego->item(x,y)->setText(QString::number(domino->at(0)->getNumero2()));
-                ui->tableroJuego->item(x,y)->setBackgroundColor(QColor(255,0,0));
+                ui->tableroJuego->item(x,y)->setBackgroundColor(QColor(0,G,B));
                 colocar = true;
                 cout << "Ficha puesta\n";
                 domino->pop_front();
@@ -216,7 +211,7 @@ bool Sudominoku::verificarCasilla(int i, int j) {
 
     bool casillaLibre = false;
 
-    if (i > 0 && i < 9 && j > 0 && j < 9) {
+    if (i >= 0 && i < 9 && j >= 0 && j < 9) {
 
         if (ui->tableroJuego->item(i, j)->text().size() == 0)
             casillaLibre = true;
@@ -224,5 +219,109 @@ bool Sudominoku::verificarCasilla(int i, int j) {
     }
 
     return casillaLibre;
+
+}
+
+void Sudominoku::on_actionCargar_ambiente_triggered()
+{
+    cargarArchivo();
+}
+
+void Sudominoku::on_actionAleatorio_triggered()
+{
+    cargarAmbiente();
+}
+
+void Sudominoku::cargarArchivo() {
+
+    definirDomino();
+    definirContenedores();
+    reiniciarGUI();
+
+    QString username = getenv("USER");
+    QString path_to_show = "/home/" + username + "/";
+
+    QString path = QFileDialog::getOpenFileName(this, tr("Defina el archivo..."), path_to_show.toStdString().c_str());
+
+    QFile *archivo = new QFile(path);
+
+    if (!archivo->open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    int lineaArchivo = 0;
+
+    while (!archivo->atEnd()) {
+
+        QByteArray line = archivo->readLine();
+        QString linea (line);
+        QStringList caracteres = linea.split(QRegExp("\\s"));
+
+        for (int j = 0; j < caracteres.size()-1; j++) {
+
+            QString valor = caracteres.at(j).toLocal8Bit().constData();
+            QTableWidgetItem *campo = ui->tableroJuego->item(lineaArchivo, j);
+
+            if (valor == "0") {
+
+                campo->setBackgroundColor(QColor(0,0,0));
+                campo->setText("");
+
+            }
+
+            else {
+
+                campo->setBackgroundColor(QColor(255,0,0));
+                campo->setText(valor);
+
+            }
+
+        }
+
+        lineaArchivo++;
+
+    }
+
+    qApp->processEvents();
+
+}
+
+void Sudominoku::reiniciarGUI() {
+
+    for (int i = 0; i < 9; i++) {
+
+        for (int j = 0; j < 9; j++) {
+
+            ui->tableroJuego->item(i, j)->setText("");
+            ui->tableroJuego->item(i, j)->setBackgroundColor(QColor(0,0,0));
+
+        }
+
+    }
+
+}
+
+void Sudominoku::definirContenedores() {
+
+    filas = new QVector<QVector<Ficha*>*>();
+    columnas = new QVector<QVector<Ficha*>*>();
+    cuadros = new QVector<QVector<Ficha*>*>();
+
+    for (int i = 0; i < 9; i++) {
+
+        filas->append(new QVector<Ficha*>());
+
+    }
+
+    for (int i = 0; i < 9; i++) {
+
+        columnas->append(new QVector<Ficha*>());
+
+    }
+
+    for (int i = 0; i < 9; i++) {
+
+        cuadros->append(new QVector<Ficha*>());
+
+    }
 
 }
