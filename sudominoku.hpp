@@ -24,7 +24,7 @@ public:
     void definirContenedores();
     bool verificarsudoku();
     int ubicacionCuadro(int fila, int colum);
-    bool validarsudoku(int i,int j,int num);
+    bool validarsudoku(int i,int j,int cubo,int num);
 
 private slots:
     void on_actionJugar_triggered();
