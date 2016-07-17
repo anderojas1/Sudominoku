@@ -22,6 +22,9 @@ public:
     void cargarArchivo();
     void reiniciarGUI();
     void definirContenedores();
+    bool verificarsudoku();
+    int ubicacionCuadro(int fila, int colum);
+    bool validarsudoku(int i,int j,int num);
 
 private slots:
     void on_actionJugar_triggered();
@@ -35,9 +38,9 @@ private:
     QString ruta;
     void llenarJuego();
     QVector<Ficha*> *domino;
-    QVector<QVector<Ficha*>*> *filas;
-    QVector<QVector<Ficha*>*> *columnas;
-    QVector<QVector<Ficha*>*> *cuadros;
+    QVector<QVector<int>*> *filas;
+    QVector<QVector<int>*> *columnas;
+    QVector<QVector<int>*> *cuadros;
 
 };
 

@@ -111,6 +111,24 @@ void Sudominoku::cargarAmbiente() {
             casilla->setText(QString::number(contadorNumeros++));
             casilla->setBackgroundColor(QColor(255,0,0));
 
+          filas->at(i)->append(casilla->text().toInt());
+          columnas->at(j)->append(casilla->text().toInt());
+          int cuadro=ubicacionCuadro(i,j);
+          //cuadros->at(cuadro)->append(casilla->text().toInt());
+          cout <<"valor i: "<<i<< endl;
+          cout <<"valor j: "<<j<< endl;
+          cout <<"cuadro: "<<cuadro<<endl;
+
+         bool validacion=validarsudoku(i,j,casilla->text().toInt());
+
+
+           if (validacion){
+               cout<<"se pudo colocar"<<endl;
+           }
+           else {
+               cout<<"NO se pudo colocar"<<endl;
+           }
+
         }
 
     }
@@ -174,8 +192,39 @@ void Sudominoku::llenarJuego() {
                 ui->tableroJuego->item(x,y)->setBackgroundColor(QColor(0,G,B));
                 colocar = true;
                 cout << "Ficha puesta\n";
+
+
+                filas->at(i)->append(domino->at(0)->getNumero1());
+                columnas->at(j)->append(domino->at(0)->getNumero1());
+                int cuadro1=ubicacionCuadro(i,j);
+                //cuadros->at(cuadro1)->append(domino->at(0)->getNumero1());
+                cout <<"valor i: "<<i<< endl;
+                cout <<"valor j: "<<j<< endl;
+                cout <<"cuadro num1: "<<cuadro1<<endl;
+
+                bool validacion=validarsudoku(i,j,domino->at(0)->getNumero1());
+
+                  if (validacion){
+                      cout<<"se pudo colocar..................."<<endl;
+                  }
+                  else {
+                      cout<<"NO se pudo colocar"<<endl;
+                  }
+
+
+
+                filas->at(x)->append(domino->at(0)->getNumero2());
+                columnas->at(y)->append(domino->at(0)->getNumero2());
+                int cuadro2=ubicacionCuadro(x,y);
+                //cuadros->at(cuadro2)->append(domino->at(0)->getNumero2());
+                cout <<"valor x: "<<x<< endl;
+                cout <<"valor y: "<<y<< endl;
+                cout <<"cuadro num2: "<<cuadro2<<endl;
+
                 domino->pop_front();
                 qApp->processEvents();
+
+
 
             }
 
@@ -302,26 +351,102 @@ void Sudominoku::reiniciarGUI() {
 
 void Sudominoku::definirContenedores() {
 
-    filas = new QVector<QVector<Ficha*>*>();
-    columnas = new QVector<QVector<Ficha*>*>();
-    cuadros = new QVector<QVector<Ficha*>*>();
+    filas = new QVector<QVector<int>*>();
+    columnas = new QVector<QVector<int>*>();
+    cuadros = new QVector<QVector<int>*>();
 
     for (int i = 0; i < 9; i++) {
 
-        filas->append(new QVector<Ficha*>());
+        filas->append(new QVector<int>());
 
     }
 
     for (int i = 0; i < 9; i++) {
 
-        columnas->append(new QVector<Ficha*>());
+        columnas->append(new QVector<int>());
 
     }
 
     for (int i = 0; i < 9; i++) {
 
-        cuadros->append(new QVector<Ficha*>());
+        cuadros->append(new QVector<int>());
 
     }
 
 }
+int Sudominoku::ubicacionCuadro(int fila, int colum){
+    int resultado;
+
+    if (fila <= 2){
+        if (colum <=2){
+            resultado=1;
+        }
+        else if((colum>2)&&(colum <=5)){
+            resultado=2;
+        }
+        else {
+            resultado=3;
+        }
+    }
+    else if ((fila >2)&&(fila<=5)){
+
+        if (colum <=2){
+            resultado=4;
+        }
+        else if((colum>2)&&(colum <=5)){
+            resultado=5;
+        }
+        else {
+            resultado=6;
+        }
+    }
+    else {
+        if (colum <=2){
+            resultado=7;
+        }
+        else if((colum>2)&&(colum <=5)){
+            resultado=8;
+        }
+        else {
+            resultado=9;
+        }
+    }
+    return resultado;
+}
+
+bool Sudominoku::validarsudoku(int i, int j,int num){
+    QVector<int> *fila=new QVector<int>();
+    fila=filas->at(i);
+    QVector<int> *colum=new QVector<int>();
+    colum=columnas->at(j);
+    int contador=0;
+    bool respuesta=true;
+
+    for(int k=0; k<fila->size(); k++){
+        if (fila->at(k)==num){
+            contador++;
+        }
+        if (contador>1){
+            respuesta=false;
+            break;
+        }
+    }
+    contador=0;
+    for(int m=0; m<colum->size(); m++){
+        if (colum->at(m)==num){
+            contador++;
+        }
+        if (contador>1){
+            respuesta=false;
+            break;
+        }
+    }
+
+    return respuesta;
+
+}
+
+
+
+
+
