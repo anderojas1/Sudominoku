@@ -114,7 +114,7 @@ void Sudominoku::cargarAmbiente() {
           filas->at(i)->append(casilla->text().toInt());
           columnas->at(j)->append(casilla->text().toInt());
           int cuadro=ubicacionCuadro(i,j);
-          //cuadros->at(cuadro)->append(casilla->text().toInt());
+          cuadros->at(cuadro)->append(casilla->text().toInt());
           cout <<"valor i: "<<i<< endl;
           cout <<"valor j: "<<j<< endl;
           cout <<"cuadro: "<<cuadro<<endl;
@@ -123,10 +123,10 @@ void Sudominoku::cargarAmbiente() {
 
 
            if (validacion){
-               cout<<"se pudo colocar"<<endl;
+               cout<<"se puede colocar"<<endl;
            }
            else {
-               cout<<"NO se pudo colocar"<<endl;
+               cout<<"NO se puede colocar"<<endl;
            }
 
         }
@@ -197,7 +197,7 @@ void Sudominoku::llenarJuego() {
                 filas->at(i)->append(domino->at(0)->getNumero1());
                 columnas->at(j)->append(domino->at(0)->getNumero1());
                 int cuadro1=ubicacionCuadro(i,j);
-                //cuadros->at(cuadro1)->append(domino->at(0)->getNumero1());
+                cuadros->at(cuadro1)->append(domino->at(0)->getNumero1());
                 cout <<"valor i: "<<i<< endl;
                 cout <<"valor j: "<<j<< endl;
                 cout <<"cuadro num1: "<<cuadro1<<endl;
@@ -205,10 +205,10 @@ void Sudominoku::llenarJuego() {
                 bool validacion=validarsudoku(i,j,domino->at(0)->getNumero1());
 
                   if (validacion){
-                      cout<<"se pudo colocar..................."<<endl;
+                      cout<<"se puede colocar..................."<<endl;
                   }
                   else {
-                      cout<<"NO se pudo colocar"<<endl;
+                      cout<<"NO se puede colocar"<<endl;
                   }
 
 
@@ -216,10 +216,19 @@ void Sudominoku::llenarJuego() {
                 filas->at(x)->append(domino->at(0)->getNumero2());
                 columnas->at(y)->append(domino->at(0)->getNumero2());
                 int cuadro2=ubicacionCuadro(x,y);
-                //cuadros->at(cuadro2)->append(domino->at(0)->getNumero2());
+                cuadros->at(cuadro2)->append(domino->at(0)->getNumero2());
                 cout <<"valor x: "<<x<< endl;
                 cout <<"valor y: "<<y<< endl;
                 cout <<"cuadro num2: "<<cuadro2<<endl;
+
+                bool validacion2=validarsudoku(x,y,domino->at(0)->getNumero2());
+
+                  if (validacion2){
+                      cout<<"se puede colocar..................."<<endl;
+                  }
+                  else {
+                      cout<<"NO se puede colocar"<<endl;
+                  }
 
                 domino->pop_front();
                 qApp->processEvents();
@@ -379,36 +388,36 @@ int Sudominoku::ubicacionCuadro(int fila, int colum){
 
     if (fila <= 2){
         if (colum <=2){
-            resultado=1;
+            resultado=0;
         }
         else if((colum>2)&&(colum <=5)){
-            resultado=2;
+            resultado=1;
         }
         else {
-            resultado=3;
+            resultado=2;
         }
     }
     else if ((fila >2)&&(fila<=5)){
 
         if (colum <=2){
-            resultado=4;
+            resultado=3;
         }
         else if((colum>2)&&(colum <=5)){
-            resultado=5;
+            resultado=4;
         }
         else {
-            resultado=6;
+            resultado=5;
         }
     }
     else {
         if (colum <=2){
-            resultado=7;
+            resultado=6;
         }
         else if((colum>2)&&(colum <=5)){
-            resultado=8;
+            resultado=7;
         }
         else {
-            resultado=9;
+            resultado=8;
         }
     }
     return resultado;
