@@ -28,11 +28,17 @@ public:
     bool validarSudoku();
     void guardarEstado();
     void obtenerEstado();
+    void validarBuenas(int matriz [][9]);
+    void llenarJuegoPosicionAleatoria();
 
 private slots:
     void on_actionJugar_triggered();
     void on_actionCargar_ambiente_triggered();
     void on_actionAleatorio_triggered();
+
+    void on_actionFichas_Aleatorias_triggered();
+
+    void on_actionPosiciones_Aleatorias_triggered();
 
 private:
     Ui::Sudominoku *ui;

@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <QTextStream>
 #include <QThread>
+#include <algorithm>
 
 
 using namespace std;
@@ -122,11 +123,15 @@ void Sudominoku::cargarAmbiente() {
 
     }
 
+    guardarEstado();
+
 }
 
 void Sudominoku::llenarJuego() {
 
     srand(time(NULL));
+
+    while(validarSudoku() == false){
 
     /*while (domino->size() > 0) {
 
@@ -349,7 +354,7 @@ void Sudominoku::llenarJuego() {
                 }
 
                 else {
-                    qDebug(valor.toStdString().c_str());
+                //    qDebug(valor.toStdString().c_str());
                 }
             }
         }
@@ -366,10 +371,31 @@ void Sudominoku::llenarJuego() {
         definirContenedores();
         obtenerEstado();
         //ui->tableroJuego->item(8,6)->setText("anasn");
-        llenarJuego();
+        //llenarJuego();
 
     }
 
+    int matrizJuego[9][9];
+
+    for(int i = 0; i < 9; i++){
+        for(int j = 0; j < 9; j++){
+
+            if(matrizJuego[i][j] = ui->tableroJuego->item(i,j)->text() == ""){
+
+                matrizJuego[i][j] = 0;
+            }else{
+
+                matrizJuego[i][j] = ui->tableroJuego->item(i,j)->text().toInt();
+
+            }
+
+        }
+
+    }
+
+    validarBuenas(matrizJuego);
+
+}
 }
 
 void Sudominoku::on_actionJugar_triggered()
@@ -380,7 +406,7 @@ void Sudominoku::on_actionJugar_triggered()
 
 void Sudominoku::definirDomino() {
 
-    delete domino;
+    //delete domino;
 
     domino = new QVector<Ficha*>();
 
@@ -656,7 +682,7 @@ bool Sudominoku::validarSudoku() {
 
 void Sudominoku::guardarEstado() {
 
-    QFile estadoInicial("/home/anderojas/Proyectos/SuDominoKu/pruebas/prebaTexto.txt");
+    QFile estadoInicial("/home/julian/Desktop/Sudominoku/sudominoku/pruebas/prebaTexto.txt");
 
     estadoInicial.open(QIODevice::WriteOnly | QIODevice::Truncate);
 
@@ -694,7 +720,7 @@ void Sudominoku::guardarEstado() {
 
 void Sudominoku::obtenerEstado() {
 
-    QFile *archivo = new QFile("/home/anderojas/Proyectos/SuDominoKu/pruebas/prebaTexto.txt");
+    QFile *archivo = new QFile("/home/julian/Desktop/Sudominoku/sudominoku/pruebas/prebaTexto.txt");
 
     if (!archivo->open(QIODevice::ReadOnly | QIODevice::Text))
         return;
@@ -748,8 +774,184 @@ void Sudominoku::obtenerEstado() {
 
 }
 
+void Sudominoku::validarBuenas(int matriz [][9]){
+
+        int numFilas [9];
+        int numCol [9];
+
+        bool col = true;
+        bool fil = true;
+
+        int cantidadFilaBien = 0;
+        int cantidadColBien = 0;
+
+
+            for(int i = 0; i < 9; i++){
+
+                for(int j = 0; j < 9; j++){
+
+                    numFilas[j] = matriz[i][j];
+                    numCol[j] = matriz[j][i];
+                }
 
 
 
+                vector <int> vectorFila (numFilas, numFilas+9);
+                vector <int> vectorCol (numCol, numCol+9);
 
 
+
+                sort(vectorFila.begin(), vectorFila.end());
+                sort(vectorCol.begin(), vectorCol.end());
+
+
+                for(int i = 1; i < 10 && fil == true; i++){
+
+
+                    if(vectorFila[i - 1] != i){
+
+                        fil = false;
+
+                        }
+
+                    }
+
+                for(int i = 1; i < 10 && col == true; i++){
+
+                    if(vectorCol[i -1] != i){
+
+                        col = false;
+
+                        }
+
+                    }
+
+                if(fil == true){
+
+                        cantidadFilaBien ++;
+                        fil = true;
+                    }else{
+
+                        fil = true;
+
+                        }
+
+                if(col == true){
+
+                        cantidadColBien++;
+                        col = true;
+                    }else{
+
+                        col = true;
+
+                        }
+
+            }
+
+
+
+            cout << "cantidad filas bien:	"<< cantidadFilaBien <<"	" <<endl;
+            cout << "cantidad Col bien:	"<< cantidadColBien <<"	" <<endl;
+        }
+
+void Sudominoku::llenarJuegoPosicionAleatoria() {
+
+    srand(time(NULL));
+
+    while (validarSudoku() == false) {
+
+        int contador = 0;
+
+        while (domino->size() > 0 && contador < 20) {
+
+            bool colocar = false;
+            cout << "Ficha: " << domino->at(0)->getNumero1() << " " << domino->at(0)->getNumero2() << endl;
+
+            while (colocar == false) {
+                int i = rand()%9;
+                int j = rand()%9;
+                int rotacion = rand()%3;
+                int x, y;
+                if (rotacion == 0) {
+                    x = i;
+                    y = j+1;
+                }
+                else if (rotacion == 1) {
+                    x = i+1;
+                    y = j;
+                }
+                else if (rotacion == 2) {
+                    x = i;
+                    y = j-1;
+                }
+                else {
+                    x = i-1;
+                    y = j;
+                }
+                if (verificarCasilla(i, j) && verificarCasilla(x, y)) {
+                    int cuadro1=ubicacionCuadro(i,j);
+                    bool validacion=validarsudoku(i,j,cuadro1,domino->at(0)->getNumero1());
+                    int cuadro2=ubicacionCuadro(x,y);
+                    bool validacion2=validarsudoku(x,y,cuadro2,domino->at(0)->getNumero2());
+                    if (validacion && validacion2){
+                        int G = rand()%255;
+                        int B = rand()%255;
+                        ui->tableroJuego->item(i,j)->setText(QString::number(domino->at(0)->getNumero1()));
+                        ui->tableroJuego->item(i,j)->setBackgroundColor(QColor(0,G,B));
+                        ui->tableroJuego->item(x,y)->setText(QString::number(domino->at(0)->getNumero2()));
+                        ui->tableroJuego->item(x,y)->setBackgroundColor(QColor(0,G,B));
+                        colocar = true;
+                        cout << "Ficha puesta\n";
+                        filas->at(i)->append(domino->at(0)->getNumero1());
+                        columnas->at(j)->append(domino->at(0)->getNumero1());
+                        cuadros->at(cuadro1)->append(domino->at(0)->getNumero1());
+                        cout <<"valor i: "<<i<< endl;
+                        cout <<"valor j: "<<j<< endl;
+                        filas->at(x)->append(domino->at(0)->getNumero2());
+                        columnas->at(y)->append(domino->at(0)->getNumero2());
+                        cuadros->at(cuadro2)->append(domino->at(0)->getNumero2());
+                        cout <<"valor x: "<<x<< endl;
+                        cout <<"valor y: "<<y<< endl;
+                        domino->pop_front();
+                        contador = 0;
+                        qApp->processEvents();
+                    }
+                }
+
+                else
+                    contador++;
+
+            }
+
+            int matrizJuego[9][9];
+
+            for(int i = 0; i < 9; i++){
+                for(int j = 0; j < 9; j++){
+
+                    if(matrizJuego[i][j] = ui->tableroJuego->item(i,j)->text() == ""){
+
+                        matrizJuego[i][j] = 0;
+                    }else{
+
+                        matrizJuego[i][j] = ui->tableroJuego->item(i,j)->text().toInt();
+
+                    }
+
+                }
+
+            }
+
+            validarBuenas(matrizJuego);
+        }
+    }
+}
+
+void Sudominoku::on_actionFichas_Aleatorias_triggered()
+{
+    llenarJuego();
+}
+
+void Sudominoku::on_actionPosiciones_Aleatorias_triggered()
+{
+    llenarJuegoPosicionAleatoria();
+}
