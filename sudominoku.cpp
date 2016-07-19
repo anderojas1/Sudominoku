@@ -234,8 +234,19 @@ void Sudominoku::llenarJuego() {
                 //cout << "Obtiene casilla\n";
                 qApp->processEvents();
                 QTableWidgetItem *campoContiguo = NULL;
+                if (i == 8) {
+
+                    QString msj = "Entrando a posición (" + QString::number(i) + "," + QString::number(j)
+                            + ")";
+                    //qDebug(msj.toStdString().c_str());
+                    QString ms = "Quedan " + QString::number(domino->size()) + " fichas disponibles";
+                    //qDebug(ms.toStdString().c_str());
+
+                }
 
                 if (casilla->text() == "") {
+
+
 
                     if (j+1 < 9) {
 
@@ -282,6 +293,24 @@ void Sudominoku::llenarJuego() {
 
                             int G = rand()%255;
                             int B = rand()%255;
+                            casilla->setText(QString::number(fichaObtenida->getNumero1()));
+                            casilla->setBackgroundColor(QColor(0,G,B));
+                            campoContiguo->setText(QString::number(fichaObtenida->getNumero2()));
+                            campoContiguo->setBackgroundColor(QColor(0,G,B));
+                            domino->remove(posicion);
+
+                        }
+
+                    }
+
+                    /*else if (i+1 < 9) {
+
+                        campoContiguo = ui->tableroJuego->item(i+1, j);
+
+                        if (campoContiguo->text() == "") {
+
+                            int G = rand()%255;
+                            int B = rand()%255;
 
                             casilla->setText(QString::number(fichaObtenida->getNumero1()));
                             casilla->setBackgroundColor(QColor(0,G,B));
@@ -302,6 +331,7 @@ void Sudominoku::llenarJuego() {
 
     }
 
+    qApp->processEvents();
     if (validarSudoku() == true)
         qDebug("Correcto");
     else {
@@ -315,20 +345,26 @@ void Sudominoku::llenarJuego() {
                 QString valor = ui->tableroJuego->item(i,j)->text();
 
                 if (valor == "") {
-                    qDebug("Pailas");
+                    qDebug("vacío");
+                }
+
+                else {
+                    qDebug(valor.toStdString().c_str());
                 }
             }
         }
-      //  qApp->processEvents();
+
         //QThread::sleep(3000);
         //this->thread()->start();
         //qApp->processEvents();
         //qDebug("No correcto");
+
+        QString reporte = "No se colocaron " + QString::number(domino->size()) + " fichas";
+        qDebug(reporte.toStdString().c_str());
         reiniciarGUI();
         definirDomino();
         definirContenedores();
         obtenerEstado();
-        qDebug(ui->tableroJuego->item(8,6)->text().toStdString().c_str());
         //ui->tableroJuego->item(8,6)->setText("anasn");
         llenarJuego();
 
@@ -343,6 +379,8 @@ void Sudominoku::on_actionJugar_triggered()
 }
 
 void Sudominoku::definirDomino() {
+
+    delete domino;
 
     domino = new QVector<Ficha*>();
 
@@ -706,7 +744,7 @@ void Sudominoku::obtenerEstado() {
 
     }
 
-    qApp->processEvents();
+    //qApp->processEvents();
 
 }
 
