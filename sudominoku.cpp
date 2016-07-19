@@ -8,6 +8,8 @@
 #include <QFile>
 #include <QFileDialog>
 #include <cstdlib>
+#include <QTextStream>
+#include <QThread>
 
 
 using namespace std;
@@ -126,7 +128,7 @@ void Sudominoku::llenarJuego() {
 
     srand(time(NULL));
 
-    while (domino->size() > 0) {
+    /*while (domino->size() > 0) {
 
         bool colocar = false;
 
@@ -204,8 +206,94 @@ void Sudominoku::llenarJuego() {
                     qApp->processEvents();
 
                 }
+
+            }
+
+        }
+
+    }*/
+    qApp->processEvents();
+    for (int i = 0; i < 9; i++) {
+
+        for (int j = 0; j < 9; j++) {
+
+
+            if (domino->size() > 0) {
+
+                int posicion = 0;
+
+                if (domino->size() > 1)
+                    posicion = rand()%(domino->size());
                 else {
-                    cout<<"NO se puede colocar"<<endl;
+
+                }
+                //cout << "Obtiene posicion\n";
+                qApp->processEvents();
+                Ficha *fichaObtenida = domino->at(posicion);
+                QTableWidgetItem *casilla = ui->tableroJuego->item(i, j);
+                //cout << "Obtiene casilla\n";
+                qApp->processEvents();
+                QTableWidgetItem *campoContiguo = NULL;
+
+                if (casilla->text() == "") {
+
+                    if (j+1 < 9) {
+
+                        campoContiguo = ui->tableroJuego->item(i, j+1);
+
+                        if (campoContiguo->text() == "") {
+
+                            int G = rand()%255;
+                            int B = rand()%255;
+
+                            casilla->setText(QString::number(fichaObtenida->getNumero1()));
+                            casilla->setBackgroundColor(QColor(0,G,B));
+                            campoContiguo->setText(QString::number(fichaObtenida->getNumero2()));
+                            campoContiguo->setBackgroundColor(QColor(0,G,B));
+                            domino->remove(posicion);
+
+                        }
+
+                        else if (i+1 < 9) {
+
+                            campoContiguo = ui->tableroJuego->item(i+1, j);
+
+                            if (campoContiguo->text() == "") {
+
+                                int G = rand()%255;
+                                int B = rand()%255;
+                                casilla->setText(QString::number(fichaObtenida->getNumero1()));
+                                casilla->setBackgroundColor(QColor(0,G,B));
+                                campoContiguo->setText(QString::number(fichaObtenida->getNumero2()));
+                                campoContiguo->setBackgroundColor(QColor(0,G,B));
+                                domino->remove(posicion);
+
+                            }
+
+                        }
+
+                    }
+
+                    else if (i+1 < 9) {
+
+                        campoContiguo = ui->tableroJuego->item(i+1, j);
+
+                        if (campoContiguo->text() == "") {
+
+                            int G = rand()%255;
+                            int B = rand()%255;
+
+                            casilla->setText(QString::number(fichaObtenida->getNumero1()));
+                            casilla->setBackgroundColor(QColor(0,G,B));
+                            campoContiguo->setText(QString::number(fichaObtenida->getNumero2()));
+                            campoContiguo->setBackgroundColor(QColor(0,G,B));
+                            domino->remove(posicion);
+
+                        }
+
+                    }*/
+
+
                 }
 
             }
@@ -214,10 +302,43 @@ void Sudominoku::llenarJuego() {
 
     }
 
+    if (validarSudoku() == true)
+        qDebug("Correcto");
+    else {
+
+        //qDebug("Entrando a validar si se llenó el sudoku");
+
+        for (int i = 0; i < 9; i++) {
+
+            for (int j = 0; j < 9; j++) {
+
+                QString valor = ui->tableroJuego->item(i,j)->text();
+
+                if (valor == "") {
+                    qDebug("Pailas");
+                }
+            }
+        }
+      //  qApp->processEvents();
+        //QThread::sleep(3000);
+        //this->thread()->start();
+        //qApp->processEvents();
+        //qDebug("No correcto");
+        reiniciarGUI();
+        definirDomino();
+        definirContenedores();
+        obtenerEstado();
+        qDebug(ui->tableroJuego->item(8,6)->text().toStdString().c_str());
+        //ui->tableroJuego->item(8,6)->setText("anasn");
+        llenarJuego();
+
+    }
+
 }
 
 void Sudominoku::on_actionJugar_triggered()
 {
+    qDebug("Funciona\n");
     llenarJuego();
 }
 
@@ -322,6 +443,8 @@ void Sudominoku::cargarArchivo() {
         lineaArchivo++;
 
     }
+
+    guardarEstado();
 
     qApp->processEvents();
 
@@ -452,6 +575,141 @@ bool Sudominoku::validarsudoku(int i, int j,int cubo, int num){
     return respuesta;
 
 }
+
+bool Sudominoku::validarSudoku() {
+
+    bool valido = true;
+
+    for (int i = 0; i < 9 && valido == true; i++) {
+
+        int suma = 0;
+
+        for (int j = 0; j < 9; j++) {
+
+            if (ui->tableroJuego->item(i, j)->text().size() > 0)
+                suma += ui->tableroJuego->item(i, j)->text().toInt();
+
+        }
+
+        if (suma != 45)
+            valido = false;
+
+    }
+
+    for (int j = 0; j < 9 && valido == true; j++) {
+
+        int suma = 0;
+
+        for (int i = 0; i < 9; i++) {
+
+            if (ui->tableroJuego->item(i,j)->text().size() > 0)
+                suma += ui->tableroJuego->item(i, j)->text().toInt();
+
+        }
+
+        if (suma != 45)
+            valido = false;
+
+    }
+
+    return valido;
+
+}
+
+void Sudominoku::guardarEstado() {
+
+    QFile estadoInicial("/home/anderojas/Proyectos/SuDominoKu/pruebas/prebaTexto.txt");
+
+    estadoInicial.open(QIODevice::WriteOnly | QIODevice::Truncate);
+
+    QTextStream texto(&estadoInicial);
+
+  //  texto << "Hola mundo"<<endl;
+
+    for (int i = 0; i < 9; i++) {
+
+       QString fila = "";
+
+       for (int j = 0; j < 9; j++) {
+
+           QString valor = ui->tableroJuego->item(i, j)->text();
+
+                if (valor.size() == 0)
+                    fila += "0 ";
+
+                else
+                    fila += valor + " ";
+
+        }
+
+            fila.remove(fila.size()-1);
+
+            texto << fila << endl;
+
+    }
+
+    estadoInicial.close();
+
+    cout<<"Se creo"<<endl;
+}
+
+
+void Sudominoku::obtenerEstado() {
+
+    QFile *archivo = new QFile("/home/anderojas/Proyectos/SuDominoKu/pruebas/prebaTexto.txt");
+
+    if (!archivo->open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    int lineaArchivo = 0;
+    int fila = -1;
+
+    while (!archivo->atEnd()) {
+
+        QByteArray line = archivo->readLine();
+        QString linea (line);
+        QStringList caracteres = linea.split(QRegExp("\\s"));
+        fila++;
+        int colum=-1;
+
+        for (int j = 0; j < caracteres.size()-2; j++) {
+
+            QString valor = caracteres.at(j).toLocal8Bit().constData();
+            QTableWidgetItem *campo = ui->tableroJuego->item(lineaArchivo, j);
+
+            colum++;
+
+            if (valor == "0") {
+
+                campo->setBackgroundColor(QColor(0,0,0));
+                campo->setText("");
+
+            }
+
+            else {
+
+                if (campo == NULL)
+                    qDebug("Más nulo que que hp");
+                campo->setBackgroundColor(QColor(255,0,0));
+                campo->setText(valor);
+
+                filas->at(fila)->append(valor.toInt());
+                columnas->at(colum)->append(valor.toInt());
+                int cuadro=ubicacionCuadro(fila,colum);
+                cuadros->at(cuadro)->append(valor.toInt());
+
+            }
+
+        }
+
+        lineaArchivo++;
+
+    }
+
+    qApp->processEvents();
+
+}
+
 
 
 

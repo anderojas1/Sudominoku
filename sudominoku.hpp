@@ -25,6 +25,9 @@ public:
     bool verificarsudoku();
     int ubicacionCuadro(int fila, int colum);
     bool validarsudoku(int i,int j,int cubo,int num);
+    bool validarSudoku();
+    void guardarEstado();
+    void obtenerEstado();
 
 private slots:
     void on_actionJugar_triggered();
