@@ -132,92 +132,10 @@ void Sudominoku::llenarJuego() {
 
     srand(time(NULL));
 
+    int matrizJuego[9][9];
+
     while(validarSudoku() == false){
 
-    /*while (domino->size() > 0) {
-
-        bool colocar = false;
-
-        cout << "Ficha: " << domino->at(0)->getNumero1() << " " << domino->at(0)->getNumero2() << endl;
-
-        while (colocar == false) {
-
-            int i = rand()%9;
-            int j = rand()%9;
-            int rotacion = rand()%3;
-            int x, y;
-
-            if (rotacion == 0) {
-
-                x = i;
-                y = j+1;
-
-            }
-
-            else if (rotacion == 1) {
-
-                x = i+1;
-                y = j;
-
-            }
-
-            else if (rotacion == 2) {
-
-                x = i;
-                y = j-1;
-
-            }
-
-            else {
-
-                x = i-1;
-                y = j;
-
-            }
-
-
-            if (verificarCasilla(i, j) && verificarCasilla(x, y)) {
-                int cuadro1=ubicacionCuadro(i,j);
-                bool validacion=validarsudoku(i,j,cuadro1,domino->at(0)->getNumero1());
-                int cuadro2=ubicacionCuadro(x,y);
-                bool validacion2=validarsudoku(x,y,cuadro2,domino->at(0)->getNumero2());
-
-                if (validacion && validacion2){
-
-                    int G = rand()%255;
-                    int B = rand()%255;
-
-                    ui->tableroJuego->item(i,j)->setText(QString::number(domino->at(0)->getNumero1()));
-                    ui->tableroJuego->item(i,j)->setBackgroundColor(QColor(0,G,B));
-                    ui->tableroJuego->item(x,y)->setText(QString::number(domino->at(0)->getNumero2()));
-                    ui->tableroJuego->item(x,y)->setBackgroundColor(QColor(0,G,B));
-                    colocar = true;
-                    cout << "Ficha puesta\n";
-
-
-                    filas->at(i)->append(domino->at(0)->getNumero1());
-                    columnas->at(j)->append(domino->at(0)->getNumero1());
-                    cuadros->at(cuadro1)->append(domino->at(0)->getNumero1());
-                    cout <<"valor i: "<<i<< endl;
-                    cout <<"valor j: "<<j<< endl;
-
-
-                    filas->at(x)->append(domino->at(0)->getNumero2());
-                    columnas->at(y)->append(domino->at(0)->getNumero2());
-                    cuadros->at(cuadro2)->append(domino->at(0)->getNumero2());
-                    cout <<"valor x: "<<x<< endl;
-                    cout <<"valor y: "<<y<< endl;
-
-                    domino->pop_front();
-                    qApp->processEvents();
-
-                }
-
-            }
-
-        }
-
-    }*/
     qApp->processEvents();
     for (int i = 0; i < 9; i++) {
 
@@ -309,25 +227,6 @@ void Sudominoku::llenarJuego() {
 
                     }
 
-                    /*else if (i+1 < 9) {
-
-                        campoContiguo = ui->tableroJuego->item(i+1, j);
-
-                        if (campoContiguo->text() == "") {
-
-                            int G = rand()%255;
-                            int B = rand()%255;
-
-                            casilla->setText(QString::number(fichaObtenida->getNumero1()));
-                            casilla->setBackgroundColor(QColor(0,G,B));
-                            campoContiguo->setText(QString::number(fichaObtenida->getNumero2()));
-                            campoContiguo->setBackgroundColor(QColor(0,G,B));
-                            domino->remove(posicion);
-
-                        }
-
-                    }*/
-
 
                 }
 
@@ -343,12 +242,18 @@ void Sudominoku::llenarJuego() {
     else {
 
         //qDebug("Entrando a validar si se llenó el sudoku");
+//cout<<"Una matriz x"<<endl;
+//cargamos la matriz que hay en la UI generada aleatorea para evaluarla
 
         for (int i = 0; i < 9; i++) {
 
             for (int j = 0; j < 9; j++) {
 
                 QString valor = ui->tableroJuego->item(i,j)->text();
+
+                //cout << valor.toStdString()<<"  ";
+
+                matrizJuego[i][j] = valor.toInt();
 
                 if (valor == "") {
                     qDebug("vacío");
@@ -357,7 +262,7 @@ void Sudominoku::llenarJuego() {
                 else {
                 //    qDebug(valor.toStdString().c_str());
                 }
-            }
+            }//cout<<endl;
         }
 
         //QThread::sleep(3000);
@@ -366,33 +271,15 @@ void Sudominoku::llenarJuego() {
         //qDebug("No correcto");
 
         QString reporte = "No se colocaron " + QString::number(domino->size()) + " fichas";
-        qDebug(reporte.toStdString().c_str());
+        //qDebug(reporte.toStdString().c_str());
         reiniciarGUI();
         definirDomino();
         definirContenedores();
         obtenerEstado();
-        //ui->tableroJuego->item(8,6)->setText("anasn");
-        //llenarJuego();
 
     }
 
-    int matrizJuego[9][9];
 
-    for(int i = 0; i < 9; i++){
-        for(int j = 0; j < 9; j++){
-
-            if(matrizJuego[i][j] = ui->tableroJuego->item(i,j)->text() == ""){
-
-                matrizJuego[i][j] = 0;
-            }else{
-
-                matrizJuego[i][j] = ui->tableroJuego->item(i,j)->text().toInt();
-
-            }
-
-        }
-
-    }
 
     validarBuenas(matrizJuego);
 
