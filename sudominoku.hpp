@@ -32,7 +32,6 @@ public:
     void llenarJuegoPosicionAleatoria();
 
 private slots:
-    void on_actionJugar_triggered();
     void on_actionCargar_ambiente_triggered();
     void on_actionAleatorio_triggered();
 

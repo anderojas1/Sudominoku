@@ -154,7 +154,7 @@
      <x>0</x>
      <y>0</y>
      <width>603</width>
-     <height>20</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOpciones">
@@ -169,7 +169,7 @@
      <addaction name="actionCargar_ambiente"/>
      <addaction name="actionAleatorio"/>
     </widget>
-    <widget class="QMenu" name="menuJugar">
+    <widget class="QMenu" name="menuJugar_2">
      <property name="title">
       <string>Jugar</string>
      </property>
@@ -177,10 +177,10 @@
      <addaction name="actionPosiciones_Aleatorias"/>
     </widget>
     <addaction name="menuCargar_juego"/>
-    <addaction name="separator"/>
-    <addaction name="menuJugar"/>
+    <addaction name="menuJugar_2"/>
     <addaction name="separator"/>
     <addaction name="actionSalir"/>
+    <addaction name="separator"/>
    </widget>
    <addaction name="menuOpciones"/>
   </widget>

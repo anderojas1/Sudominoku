@@ -11,6 +11,7 @@
 #include <QTextStream>
 #include <QThread>
 #include <algorithm>
+#include <fstream>
 
 
 using namespace std;
@@ -398,11 +399,6 @@ void Sudominoku::llenarJuego() {
 }
 }
 
-void Sudominoku::on_actionJugar_triggered()
-{
-    qDebug("Funciona\n");
-    llenarJuego();
-}
 
 void Sudominoku::definirDomino() {
 
@@ -682,7 +678,7 @@ bool Sudominoku::validarSudoku() {
 
 void Sudominoku::guardarEstado() {
 
-    QFile estadoInicial("/home/julian/Desktop/Sudominoku/sudominoku/pruebas/prebaTexto.txt");
+    QFile estadoInicial("estado.txt");
 
     estadoInicial.open(QIODevice::WriteOnly | QIODevice::Truncate);
 
@@ -720,7 +716,7 @@ void Sudominoku::guardarEstado() {
 
 void Sudominoku::obtenerEstado() {
 
-    QFile *archivo = new QFile("/home/julian/Desktop/Sudominoku/sudominoku/pruebas/prebaTexto.txt");
+    QFile *archivo = new QFile("estado.txt");
 
     if (!archivo->open(QIODevice::ReadOnly | QIODevice::Text))
         return;
@@ -770,7 +766,19 @@ void Sudominoku::obtenerEstado() {
 
     }
 
-    //qApp->processEvents();
+    qApp->processEvents();
+
+    for (int i = 0; i < filas->size(); i++) {
+
+        QString fila = "";
+
+        for (int j = 0; j < filas->at(i)->size(); j++) {
+
+            fila += QString::number(filas->at(i)->at(j)) + " ";
+        }
+
+        cout << fila.toStdString() << endl;
+    }
 
 }
 
@@ -858,16 +866,30 @@ void Sudominoku::llenarJuegoPosicionAleatoria() {
 
     srand(time(NULL));
 
-    while (validarSudoku() == false) {
+    int contadorEjecuciones = 0;
+
+
+    while (validarSudoku() == false && contadorEjecuciones < 10000000) {
+
+        definirContenedores();
+        definirDomino();
+        reiniciarGUI();
+        obtenerEstado();
+
+        contadorEjecuciones++;
+
+        ofstream reporte("fichas.txt", ios_base::app);
 
         int contador = 0;
+        int contadorFichas = 0;
 
-        while (domino->size() > 0 && contador < 20) {
+        while (domino->size() > 0 && contador <100) {
+
 
             bool colocar = false;
             cout << "Ficha: " << domino->at(0)->getNumero1() << " " << domino->at(0)->getNumero2() << endl;
 
-            while (colocar == false) {
+            while (colocar == false && contador < 100) {
                 int i = rand()%9;
                 int j = rand()%9;
                 int rotacion = rand()%3;
@@ -914,12 +936,19 @@ void Sudominoku::llenarJuegoPosicionAleatoria() {
                         cout <<"valor y: "<<y<< endl;
                         domino->pop_front();
                         contador = 0;
-                        qApp->processEvents();
+                        contadorFichas++;
                     }
+
+                    else
+                        contador++;
+
+                    qApp->processEvents();
                 }
 
                 else
                     contador++;
+
+                qApp->processEvents();
 
             }
 
@@ -942,8 +971,14 @@ void Sudominoku::llenarJuegoPosicionAleatoria() {
             }
 
             validarBuenas(matrizJuego);
+
         }
+
+        reporte << contadorFichas << endl;
+
+        reporte.close();
     }
+
 }
 
 void Sudominoku::on_actionFichas_Aleatorias_triggered()
